@@ -1,49 +1,49 @@
-function buffetRestaurantSimulation(
-        BuffetCapacity, 
-        PreparationTime, 
+function edSim(
+        doctorsOnDuty, 
+        treatmentTime, 
         MeanArrival, 
-        CashierTime, 
+        triageTime, 
         Seed, 
         Simtime) 
 {
     var sim = new Sim(); 
     var stats = new Sim.Population();
-    var cashier = new Sim.Facility('Cashier');
-    var buffet = new Sim.Buffer('Buffet', BuffetCapacity);
+    var triageNurse = new Sim.Facility('triageNurse');
+    var doctors = new Sim.Buffer('doctors', doctorsOnDuty);
     var random = new Random(Seed);
     
-    var Customer = {
+    var Patient = {
         start: function () {
             this.order();
             
-            var nextCustomerAt = random.exponential (1.0 / MeanArrival); 
-            this.setTimer(nextCustomerAt).done(this.start);
+            var nextPatientAt = random.exponential (1.0 / MeanArrival); 
+            this.setTimer(nextPatientAt).done(this.start);
         },
         
         order: function () {
-            sim.log("Customer ENTER at " + this.time());
+            sim.log("Patient ENTER at " + this.time());
             stats.enter(this.time());
             
-            this.getBuffer(buffet, 1).done(function () {
-                sim.log("Customer at CASHIER " + this.time() + " (entered at " + this.callbackData + ")");
-                var serviceTime = random.exponential(1.0 / CashierTime);
-                this.useFacility(cashier, serviceTime).done(function () {
-                    sim.log("Customer LEAVE at " + this.time() + " (entered at " + this.callbackData + ")");
+            this.getBuffer(doctors, 1).done(function () {
+                sim.log("Patient at triageNurse " + this.time() + " (entered at " + this.callbackData + ")");
+                var serviceTime = random.exponential(1.0 / triageTime);
+                this.useFacility(triageNurse, serviceTime).done(function () {
+                    sim.log("Patient LEAVE at " + this.time() + " (entered at " + this.callbackData + ")");
                     stats.leave(this.callbackData, this.time());
                 }).setData(this.callbackData);
             }).setData(this.time());
         }
     };
     
-    var Chef = {
+    var Doctor = {
         start: function () {
-            this.putBuffer(buffet, BuffetCapacity - buffet.current());
-            this.setTimer(PreparationTime).done(this.start);
+            this.putBuffer(doctors, doctorsOnDuty - doctors.current());
+            this.setTimer(treatmentTime).done(this.start);
         }
     };
     
-    sim.addEntity(Customer);
-    sim.addEntity(Chef);
+    sim.addEntity(Patient);
+    sim.addEntity(Doctor);
     
 //  Uncomment these line to display logging information
 //    sim.setLogger(function (msg) {

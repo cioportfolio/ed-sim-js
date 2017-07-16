@@ -16,7 +16,7 @@
 			var Simtime = parseFloat($('[name="Simtime"]').val());
 			
 			
-			var results = buffetRestaurantSimulation(
+			var results = edSim(
 					doctorsOnDuty,
 					treatmentTime,
 					MeanArrival,
@@ -52,17 +52,17 @@
 		<div class="form">
 		<table>
 			<tr><td>Doctors on duty: 
-				<td><input type="text" name="doctorsOnDuty" value="5.0"/> </tr>
+				<td><input type="text" name="doctorsOnDuty" value="2.0"/> </tr>
 			<tr><td>Treatment time (min):
-				<td><input type="text" name="treatmentTime" value="5"/> </tr>
+				<td><input type="text" name="treatmentTime" value="20"/> </tr>
 			<tr><td>Mean interval between patient arrivals (min):
-				<td><input type="text" name="MeanArrival" value="1.0" /> </tr>
+				<td><input type="text" name="MeanArrival" value="15" /> </tr>
 			<tr><td>Mean triage time (min):
-				<td><input type="text" name="triageTime" value="1.0" /> </tr>
+				<td><input type="text" name="triageTime" value="15" /> </tr>
 			<tr><td>Random number generation seed:
 				<td><input type="text" name="Seed" value="1234" /> </tr>
 			<tr><td>Simulation time (min):
-				<td><input type="text" name="Simtime" value="240.0"/> </tr>
+				<td><input type="text" name="Simtime" value="1440.0"/> </tr>
 		</table>
 		<input type="button" value="Run Simulation" id="run_simulation"/>
 		</div>
