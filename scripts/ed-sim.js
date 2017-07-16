@@ -16,18 +16,19 @@ function edSim(
     var random = new Random(Seed);
     
     var Patient = {
-        start: function () {
-            this.triage();
-            
+        start: function () {        
             var nextPatientAt = random.exponential (1.0 / MeanArrival); 
-            this.setTimer(nextPatientAt).done(this.start);
+            this.setTimer(nextPatientAt).done(this.triage);
+
+            this.start();
+
         },
         
         triage: function () {
             sim.log("Patient ENTER at " + this.time());
             stats.enter(this.time());
             
-            this.useFacility(triageNurse, triageTime).done(function () {
+            this.useFacility(triageNurse, random.normal(triageTime, triageTime/2)).done(function () {
                 sim.log("Patient triaged at " + this.time() + " (started at " + this.callbackData + ")");
                 this.treatment();
             }).setData(this.time());
@@ -36,7 +37,7 @@ function edSim(
         treatment: function () {
             sim.log("Patient treated at " + this.time());
             
-            this.useFacility(doctors, treatmentTime).done(function () {
+            this.useFacility(doctors, random.normal(treatmentTime,treatmentTime/2)).done(function () {
                 sim.log("Patient treated at " + this.time() + " (started at " + this.callbackData + ")");
                 stats.leave(this.callbackData, this.time());
                 
