@@ -3,39 +3,38 @@
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
 	<script type="text/javascript" src="scripts/sim-0.26.js"></script>
 	<script type="text/javascript" src="scripts/ed-sim.js"></script>
-	<link rel="stylesheet" href="examples.css" type="text/css" />
 	
 	<script type="text/javascript">
 	$(function () {
 		$("#run_simulation").click(function () {
 			
-			var BuffetCapacity = parseFloat($('[name="BuffetCapacity"]').val());
-			var PreparationTime = parseFloat($('[name="PreparationTime"]').val());
+			var doctorsOnDuty = parseFloat($('[name="doctorsOnDuty"]').val());
+			var treatmentTime = parseFloat($('[name="treatmentTime"]').val());
 			var MeanArrival = parseFloat($('[name="MeanArrival"]').val());
-			var CashierTime = parseFloat($('[name="CashierTime"]').val());
+			var triageTime = parseFloat($('[name="triageTime"]').val());
 			var Seed = parseFloat($('[name="Seed"]').val());
 			var Simtime = parseFloat($('[name="Simtime"]').val());
 			
 			
 			var results = buffetRestaurantSimulation(
-					BuffetCapacity,
-					PreparationTime,
+					doctorsOnDuty,
+					treatmentTime,
 					MeanArrival,
-					CashierTime,
+					triageTime,
 					Seed,
 					Simtime);
 			
 			var msg = "Simulation Results for ["
-								+ "Buffet Capacity = " + BuffetCapacity
-								+ ", Preparation Time = " + PreparationTime
+								+ "Doctors on duty = " + doctorsOnDuty
+								+ ", Treatment Time = " + treatmentTime
 								+ ", Mean Arrival = " + MeanArrival
-								+ ", Mean Cashier time = " + CashierTime
+								+ ", Mean triage time = " + triageTime
 								+ ", Seed = " + Seed
 								+ ", Sim time = " + Simtime
 								+ "]<br>"
-								+ "Average time spent at restaurant (min) = " 
+								+ "Average time spent at A&E (min) = " 
 								+ results[0].toFixed(4)
-								+ "<br>Average number of customers in restaurant = " 
+								+ "<br>Average number of patients in A&E = " 
 								+ results[2].toFixed(4)
 								+ "<hr>";
 			$(".results").append(msg);
@@ -49,21 +48,17 @@
 	</script>
 		
 	</head>
-	<body>
-		<div class="header">
-			<a href="buffet-restaurant.html">Back to documentation</a> | <a href="buffet_restaurant.js">View Source</a>
-		</div>
-		
+	<body>		
 		<div class="form">
 		<table>
-			<tr><td>Buffer Capacity: 
-				<td><input type="text" name="BuffetCapacity" value="5.0"/> </tr>
-			<tr><td>Salad preparation time (min):
-				<td><input type="text" name="PreparationTime" value="5"/> </tr>
-			<tr><td>Mean interval between customer arrivals (min):
+			<tr><td>Doctors on duty: 
+				<td><input type="text" name="doctorsOnDuty" value="5.0"/> </tr>
+			<tr><td>Treatment time (min):
+				<td><input type="text" name="treatmentTime" value="5"/> </tr>
+			<tr><td>Mean interval between patient arrivals (min):
 				<td><input type="text" name="MeanArrival" value="1.0" /> </tr>
-			<tr><td>Mean cashier transaction time (min):
-				<td><input type="text" name="CashierTime" value="1.0" /> </tr>
+			<tr><td>Mean triage time (min):
+				<td><input type="text" name="triageTime" value="1.0" /> </tr>
 			<tr><td>Random number generation seed:
 				<td><input type="text" name="Seed" value="1234" /> </tr>
 			<tr><td>Simulation time (min):
