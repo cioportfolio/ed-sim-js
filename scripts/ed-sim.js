@@ -1,6 +1,7 @@
-const doctorsOnDuty = 5.0;
-const treatmentTime = 20.0;
-const MeanArrival = 15.0;
+const doctorsOnDuty = 4.0;
+const treatmentTime = 60.0;
+const patientsPerDay = 150
+const MeanArrival = 24 * 60 / patientsPerDay;
 const triageTime = 5.0;
 const Seed = 1234.0;
 const Simtime = 1440.0;
@@ -13,15 +14,14 @@ function edSim(
     var stats = new Sim.Population();
     var triageNurse = new Sim.Facility('triageNurse');
     var doctors = new Sim.Facility('doctors', Sim.Facility.FCFS, doctorsOnDuty);
-    var random = new Random(Seed);
+    var random = new Random();
     
     var Patient = {
-        start: function () {        
+        start: function () {
+            this.triage();
+
             var nextPatientAt = random.exponential (1.0 / MeanArrival); 
             this.setTimer(nextPatientAt).done(this.triage);
-
-            this.start();
-
         },
         
         triage: function () {
