@@ -8,35 +8,36 @@
 	$(function () {
 		$("#run_simulation").click(function () {
 			
-			var doctorsOnDuty = parseFloat($('[name="doctorsOnDuty"]').val());
+/**			var doctorsOnDuty = parseFloat($('[name="doctorsOnDuty"]').val());
 			var treatmentTime = parseFloat($('[name="treatmentTime"]').val());
 			var MeanArrival = parseFloat($('[name="MeanArrival"]').val());
 			var triageTime = parseFloat($('[name="triageTime"]').val());
 			var Seed = parseFloat($('[name="Seed"]').val());
 			var Simtime = parseFloat($('[name="Simtime"]').val());
 			
-			
-			var results = edSim(
+*/			
+			var results = edSim(/*
 					doctorsOnDuty,
 					treatmentTime,
 					MeanArrival,
 					triageTime,
 					Seed,
-					Simtime);
+					Simtime*/);
 			
-			var msg = "Simulation Results for ["
+			var msg = "Simulation Results for [" /*
 								+ "Doctors on duty = " + doctorsOnDuty
 								+ ", Treatment Time = " + treatmentTime
 								+ ", Mean Arrival = " + MeanArrival
 								+ ", Mean triage time = " + triageTime
 								+ ", Seed = " + Seed
-								+ ", Sim time = " + Simtime
+								+ ", Sim time = " + Simtime */
 								+ "]<br>"
 								+ "Average time spent at A&E (min) = " 
 								+ results[0].toFixed(4)
 								+ "<br>Average number of patients in A&E = " 
 								+ results[2].toFixed(4)
 								+ "<hr>";
+
 			$(".results").append(msg);
 		});
 		
@@ -50,7 +51,7 @@
 	</head>
 	<body>		
 		<div class="form">
-		<table>
+<!--		<table>
 			<tr><td>Doctors on duty: 
 				<td><input type="text" name="doctorsOnDuty" value="2.0"/> </tr>
 			<tr><td>Treatment time (min):
@@ -63,7 +64,7 @@
 				<td><input type="text" name="Seed" value="1234" /> </tr>
 			<tr><td>Simulation time (min):
 				<td><input type="text" name="Simtime" value="1440.0"/> </tr>
-		</table>
+		</table> -->
 		<input type="button" value="Run Simulation" id="run_simulation"/>
 		</div>
 		
