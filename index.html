@@ -1,0 +1,83 @@
+<html>
+	<head>
+
+<!-- Load javascript modules -->
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
+	<script type="text/javascript" src="scripts/sim-0.26.js"></script>
+	<script type="text/javascript" src="scripts/ed-sim.js"></script>
+	
+<!-- Java script specific to the controls on the webpage -->
+	<script type="text/javascript">
+/* Attaches a function to run the simulation to the run button */
+	$(function () {
+		$("#run_simulation").click(function () {
+			
+/*	Simulation parameters have been moved to ed-sim.js. This commented out code would read values from on-screen form fields		
+			var doctorsOnDuty = parseFloat($('[name="doctorsOnDuty"]').val());
+			var treatmentTime = parseFloat($('[name="treatmentTime"]').val());
+			var MeanArrival = parseFloat($('[name="MeanArrival"]').val());
+			var triageTime = parseFloat($('[name="triageTime"]').val());
+			var Seed = parseFloat($('[name="Seed"]').val());
+			var Simtime = parseFloat($('[name="Simtime"]').val());
+			
+*/			
+			var results = edSim(/* parameters have been moved to ed-sim.js. Commented out code would supply these as parameters to the main edSim function
+					doctorsOnDuty,
+					treatmentTime,
+					MeanArrival,
+					triageTime,
+					Seed,
+					Simtime*/);
+			
+			var msg = "Simulation Results for [" /* Parameters have been moved to ed-sim.js. Commented out code would display the values used for simulation
+								+ "Doctors on duty = " + doctorsOnDuty
+								+ ", Treatment Time = " + treatmentTime
+								+ ", Mean Arrival = " + MeanArrival
+								+ ", Mean triage time = " + triageTime
+								+ ", Seed = " + Seed
+								+ ", Sim time = " + Simtime */
+								+ "]<br>"
+								+ "Average time spent at A&E (min) = " 
+								+ results[0].toFixed(4)
+								+ "<br>Average number of patients in A&E = " 
+								+ results[2].toFixed(4)
+								+ "<hr>";
+
+			$(".results").append(msg);
+		});
+		
+		$("#clear_result").click(function () {
+			$(".results").html('<a href="" id="clear_results">Clear</a><hr>');
+		});
+		
+	});
+	</script>
+		
+	</head>
+	<body>		
+		<div class="form">
+<!-- Parameters have been moved to ed-sim.js. Commented out code would provide form fields for changing the simulation parameters
+		<table>
+			<tr><td>Doctors on duty: 
+				<td><input type="text" name="doctorsOnDuty" value="2.0"/> </tr>
+			<tr><td>Treatment time (min):
+				<td><input type="text" name="treatmentTime" value="20"/> </tr>
+			<tr><td>Mean interval between patient arrivals (min):
+				<td><input type="text" name="MeanArrival" value="15" /> </tr>
+			<tr><td>Mean triage time (min):
+				<td><input type="text" name="triageTime" value="15" /> </tr>
+			<tr><td>Random number generation seed:
+				<td><input type="text" name="Seed" value="1234" /> </tr>
+			<tr><td>Simulation time (min):
+				<td><input type="text" name="Simtime" value="1440.0"/> </tr>
+		</table> -->
+		<input type="button" value="Run Simulation" id="run_simulation"/>
+		</div>
+		
+		<div class="results">
+			<a href="" id="clear_results">Clear</a><hr>
+		</div>
+	</body>
+</html>
+	
+	
