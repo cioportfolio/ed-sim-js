@@ -52,3 +52,6 @@ Random.prototype.genrand_real3=function(){return(this.genrand_int32()+0.5)*(1/42
 Random.prototype.gamma=function(a,b){if(a>1)for(var c=Math.sqrt(2*a-1),d=a-this.LOG4,f=a+c;;){var e=this.random();if(!(e<1.0E-7||j>0.9999999)){var h=1-this.random(),i=Math.log(e/(1-e))/c,g=a*Math.exp(i),e=e*e*h,i=d+f*i-g;if(i+this.SG_MAGICCONST-4.5*e>=0||i>=Math.log(e))return g*b}}else if(a==1){for(var j=this.random();j<=1.0E-7;)j=this.random();return-Math.log(j)*b}else{for(;;)if(j=this.random(),g=(Math.E+a)/Math.E,j*=g,g=j<=1?Math.pow(j,1/a):-Math.log((g-j)/a),e=this.random(),j>1){if(e<=Math.pow(g,
 a-1))break}else if(e<=Math.exp(-g))break;return g*b}};Random.prototype.normal=function(a,b){var c=this.lastNormal;this.lastNormal=NaN;if(!c){var d=this.random()*2*Math.PI,f=Math.sqrt(-2*Math.log(1-this.random())),c=Math.cos(d)*f;this.lastNormal=Math.sin(d)*f}return a+c*b};Random.prototype.pareto=function(a){var b=this.random();return 1/Math.pow(1-b,1/a)};
 Random.prototype.triangular=function(a,b,c){var d=(c-a)/(b-a),f=this.random();return f<=d?a+Math.sqrt(f*(b-a)*(c-a)):b-Math.sqrt((1-f)*(b-a)*(b-c))};Random.prototype.uniform=function(a,b){return a+this.random()*(b-a)};Random.prototype.weibull=function(a,b){var c=1-this.random();return a*Math.pow(-Math.log(c),1/b)};
+
+module.exports.Random = Random;
+module.exports.Sim = Sim;
