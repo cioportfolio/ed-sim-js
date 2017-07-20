@@ -39,7 +39,7 @@ var caseCongiguration = {
 	profile: [ // Optional definition for stocastic generation of cases
 	// List of attributes for each case. Can be constant value to can be generated for each case with an arbitrary function
 		{
-			name: "caseReferece",
+			name: "caseReference",
 			type: "function",
 			value: function() {
 				return incidentRef.next().value;
@@ -50,6 +50,13 @@ var caseCongiguration = {
 			type: "function",
 			value: function() {
 				return incidentTime.next().value;
+			}
+		},{
+			// Time that will be spent in triage. Could be changed to a random function
+			name: "travelDuration",
+			type: "function",
+			value: function() {
+				return random.normal(30.0, 20.0);
 			}
 		},{
 			// Time that will be spent in triage. Could be changed to a random function
