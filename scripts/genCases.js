@@ -34,7 +34,7 @@ Structure of the configuration object:
 	}]
 } */
 
-function caseGenerator (config) {
+function caseGen (config) {
 // Definition of the generator function
 	function* caseGenDef (config) {
 	//If the configuration includes a list of cases then the generator will release these one by one
@@ -68,4 +68,6 @@ function caseGenerator (config) {
 	};
 }
 
-module.exports = caseGenerator;
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+	module.exports = caseGen;
+}

@@ -1,20 +1,19 @@
 //Function to use a collection of assets and a stream of staff movements to handle a stream of patients
-var Sim = require ("./sim-0.26.js").Sim;
-var Random = require("./sim-0.26.js").Random;
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+    var Sim = require ("./sim-0.26.js").Sim;
+    var Random = require("./sim-0.26.js").Random;
 
-// Import a configuration script which defines how to generate realistic cases
-var caseConfig = require("./case.js");
-console.log(JSON.stringify(caseConfig.meta));
-// Import a configuration script which defines the resources and staff available
-var serviceConfig = require('./service.js');
-console.log(JSON.stringify(serviceConfig.meta));
+    // Import a configuration script which defines how to generate realistic cases
+    var caseConfig = require("./case.js");
+    // Import a configuration script which defines the resources and staff available
+    var serviceConfig = require('./service.js');
 
-// Import a tool which generates a sequence of cases
-var caseGen = require("./genCases.js");
+    // Import a tool which generates a sequence of cases
+    var caseGen = require("./genCases.js");
 
-// Import a tools which generates staff movements on and off shift
-var movGen = require("./genMovements.js");
-
+    // Import a tools which generates staff movements on and off shift
+    var movGen = require("./genMovements.js");
+}
 // Create a case generator by providing the configuration details
 // Get next case cases.next().value;
 var cases = new caseGen(caseConfig);
@@ -23,9 +22,10 @@ var cases = new caseGen(caseConfig);
 // Get next shift change staffing.next().value;
 var staffing = new movGen(serviceConfig);
 
-const Simtime = 24 * 60; // Duration of simulation in minutes. Currenty 1 day
+const Simtime = 7 * 24 * 60; // Duration of simulation in minutes. Currenty 1 week
+const waitTarget = 4 * 60; // Target for wait times
 
-function edSim() 
+function edSim(logFunction) 
 {
 // Create a new instance of simjs
     var sim = new Sim(); 
@@ -33,16 +33,13 @@ function edSim()
     var random = new Random();
 // Create a simjs statistics object for recording basic patient arrivals and departures
     var stats = new Sim.Population();
+// Statistics object to track achievement of the wait time target
+    var seenWithinTarget = new Sim.DataSeries();
 
 // Utility function to calculate a delay so that a timer can be set for a target time
     function calcDelay (entity, target) {
     	var delay = target - entity.time();
     	return (delay < 0) ? 0 : delay;
-    }
-
-// Wrapping the assignment in a function means each entity references its own details rather than the local, temporary variable
-    function saveDetails (entity, details) {
-    	entity.details = details;
     }
 
 // Patter for an Entity to model the patients going through the ED       
@@ -52,7 +49,9 @@ function edSim()
             this.details = cases.next().value;
             // Wait until the incident is due to start
             this.setTimer(calcDelay(this, this.details.incidentTime)).done(function () {
-                sim.log("Time: %s Patient %s starting", this.time(), this.details.caseReference);
+                sim.log('>Patient ' + this.details.caseReference + ' starting');
+                sim.log('>Details:');
+                sim.log(JSON.stringify(this.details, null, 2));
                 // Kick off the next patient
                 patient = sim.addEntity(Patient);
                 this.travel();
@@ -60,14 +59,14 @@ function edSim()
         },
         
         travel: function () {
-            sim.log("Time: %s Patient %s travelling to ED %s", this.time(), this.details.caseReference, (this.details.arriveByAmbulance)? "in an ambulance" : "in private or public transport");
+            sim.log('>Patient ' + this.details.caseReference + ' travelling to ED ' + ((this.details.arriveByAmbulance)? "in an ambulance" : "in private or public transport"));
             // Set a timer to simulate journey to the ED
             // Could be extended to model Ambulance service at some point
             this.setTimer(calcDelay(this, this.details.travelDuration)).done(this.triage);
         },
 
         triage: function () {
-            sim.log("Time: %s Patent %s queuing for triage", this.time(), this.details.caseReference);
+            sim.log('>Patient ' + this.details.caseReference + ' queueing for triage');
             this.enterTime = this.time();
             stats.enter(this.enterTime); //These stats will show wait times
 
@@ -78,10 +77,11 @@ function edSim()
         },
 
         consultation: function () {
-            sim.log("Time: %s Patent %s queuing to see a doctor", this.time(), this.details.caseReference);
-            this.useFacility(serviceElements[doctors], this.details.consultationTime).done(function () {
-                sim.log("Time: %s Patent %s leaving the ED", this.time(), this.details.caseReference);
+            sim.log('>Patient ' + this.details.caseReference + ' queueing for a doctor');
+            this.useFacility(serviceElements.doctors, this.details.consultationTime).done(function () {
+                sim.log('>Patient ' + this.details.caseReference + ' leaving the ED');
                 stats.leave(this.enterTime, this.time()); //These stats will show wait times
+                seenWithinTarget.record((this.time() - this.enterTime < waitTarget) ? 1 : 0);
             });
         }
     };
@@ -92,12 +92,12 @@ function edSim()
 // Have not yet built a model for raising and lowering staff on shifts so just use fixed ones for now
     for (var i =0; i < serviceConfig.staff.length; i++) {
         // Model staff types as Facilities. Will need to add a priority order feature for doctors
-        serviceElements[serviceConfig.staff[i].label] = Sim.Facility(serviceConfig.staff[i].name, Sim.Facility.FCFS, (i===0) ? 5 : 1);
+        serviceElements[serviceConfig.staff[i].label] = new Sim.Facility(serviceConfig.staff[i].name, Sim.Facility.FCFS, (i===0) ? 5 : 1);
     }
 
     for (i=0; i < serviceConfig.assets.length; i++) {
         // Model assets as Facilities. Will need to use alternatives when combining e.g. doctors and resus units
-        serviceElements[serviceConfig.assets[i].label] = Sim.Facility(serviceConfig.assets[i].name, Sim.Facility.FCFS, serviceConfig.assets[i].count);
+        serviceElements[serviceConfig.assets[i].label] = new Sim.Facility(serviceConfig.assets[i].name, Sim.Facility.FCFS, serviceConfig.assets[i].count);
     }
 
 /*
@@ -114,21 +114,29 @@ function edSim()
     sim.addEntity(StaffDispathcher); */
 
     
-//  Uncomment these line to display logging information
-    sim.setLogger(function (msg) {
-        console.log(msg);
-    });
+//  Set route to display logging information
+    sim.setLogger(logFunction);
+
+    sim.log('Cases: ' + JSON.stringify(caseConfig.meta, null, 2));
+    sim.log('Service: ' + JSON.stringify(serviceConfig.meta, null, 2));
+
     
 // Add the first patient
     sim.addEntity(Patient);
+    sim.log('Simulation starting');
 
     sim.simulate(Simtime);
+
+    sim.log('Simulation complete');
+    sim.log((seenWithinTarget.average() * 100).toPrecision(2) + '% seen within target time');
+    sim.log('Wait times: Mean: ' + stats.durationSeries.average().toPrecision(2) + ' minutes. Deviation: ' + stats.durationSeries.deviation().toPrecision(2));
+    sim.log('Patients in ED: Mean: ' + stats.sizeSeries.average().toPrecision(2) + '. Deviation: ' + stats.sizeSeries.deviation().toPrecision(2));
+
     
-    return [stats.durationSeries.average(),
-            stats.durationSeries.deviation(),
-            stats.sizeSeries.average(),
-            stats.sizeSeries.deviation()];
+    return { waitPerformance: seenWithinTarget.average()};
     
 }
 
-module.exports = edSim;
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+    module.exports = edSim;
+}

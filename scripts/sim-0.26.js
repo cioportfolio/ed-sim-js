@@ -53,5 +53,7 @@ Random.prototype.gamma=function(a,b){if(a>1)for(var c=Math.sqrt(2*a-1),d=a-this.
 a-1))break}else if(e<=Math.exp(-g))break;return g*b}};Random.prototype.normal=function(a,b){var c=this.lastNormal;this.lastNormal=NaN;if(!c){var d=this.random()*2*Math.PI,f=Math.sqrt(-2*Math.log(1-this.random())),c=Math.cos(d)*f;this.lastNormal=Math.sin(d)*f}return a+c*b};Random.prototype.pareto=function(a){var b=this.random();return 1/Math.pow(1-b,1/a)};
 Random.prototype.triangular=function(a,b,c){var d=(c-a)/(b-a),f=this.random();return f<=d?a+Math.sqrt(f*(b-a)*(c-a)):b-Math.sqrt((1-f)*(b-a)*(b-c))};Random.prototype.uniform=function(a,b){return a+this.random()*(b-a)};Random.prototype.weibull=function(a,b){var c=1-this.random();return a*Math.pow(-Math.log(c),1/b)};
 
-module.exports.Random = Random;
-module.exports.Sim = Sim;
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+    module.exports.Random = Random;
+	module.exports.Sim = Sim;
+}

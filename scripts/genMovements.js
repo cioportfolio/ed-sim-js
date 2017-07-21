@@ -59,7 +59,7 @@ Structure of the configuration object:
 	]}
  */
 
-function movementGenerator (config) {
+function movGen (config) {
 // Definition of the generator function for a staff type
 	function* moveGenDef (config) {
 		var count = [];
@@ -94,5 +94,6 @@ function movementGenerator (config) {
 		return this.generator.next();
 	};
 }
-
-module.exports = movementGenerator;
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+	module.exports = movGen;
+}

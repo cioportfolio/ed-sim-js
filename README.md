@@ -2,11 +2,13 @@
 
 A&E simulation based upon [simjs](simjs.com)
 
-sim-0.26.js is a modified download from the simjs site. Only changes are the addition of these two lines at the end to expose the simulator and random classes to node.js
+sim-0.26.js is a modified download from the simjs site. Only changes are the addition of these lines at the end to expose the simulator and random classes to node.js
 
 ```
-module.exports.Random = Random;
-module.exports.Sim = Sim;
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+    module.exports.Random = Random;
+	module.exports.Sim = Sim;
+}
 ```
 
 Download or clone the repository files and then the simulation can be run without any server - just launch index.html in a browser.

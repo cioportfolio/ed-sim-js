@@ -1,6 +1,10 @@
-var Sim = require ("./sim-0.26.js").Sim;
-var Random = require("./sim-0.26.js").Random;
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+	var Sim = require ("./sim-0.26.js").Sim;
+	var Random = require("./sim-0.26.js").Random;
+}
+
 var random = new Random();
+
 
 // Define convenient constants for this profile of cases
 const casesPerDay = 150.0;
@@ -30,7 +34,7 @@ function* refGen() {
 
 var incidentRef = refGen();
 
-var caseCongiguration = {
+var caseConfig = {
 // Useful referent information stored with the result. Could include source of case data, name of scenarios etc
 	meta: {
 		data: "Reference information to be stored with the results"
@@ -68,7 +72,7 @@ var caseCongiguration = {
 			name: "consultationTime",
 			type: "function",
 			value: function () {
-				return random.normal(20.0, 10.0);
+				return random.normal(50.0, 30.0);
 			}
 		},{
 			// Flag for cases which arrive by ambulance
@@ -95,4 +99,6 @@ var caseCongiguration = {
 	]
 };
 
-module.exports = caseCongiguration;
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+	module.exports = caseConfig;
+}

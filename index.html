@@ -4,7 +4,11 @@
 <!-- Load javascript modules -->
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
 	<script type="text/javascript" src="scripts/sim-0.26.js"></script>
-	<script type="text/javascript" src="scripts/ed-sim.js"></script>
+	<script type="text/javascript" src="scripts/case.js"></script>
+	<script type="text/javascript" src="scripts/service.js"></script>
+	<script type="text/javascript" src="scripts/genCases.js"></script>
+	<script type="text/javascript" src="scripts/genMovements.js"></script>
+	<script type="text/javascript" src="scripts/ed-sim-0.2.js"></script>
 	
 <!-- Java script specific to the controls on the webpage -->
 	<script type="text/javascript">
@@ -21,26 +25,22 @@
 			var Simtime = parseFloat($('[name="Simtime"]').val());
 			
 */			
-			var results = edSim(/* parameters have been moved to ed-sim.js. Commented out code would supply these as parameters to the main edSim function
-					doctorsOnDuty,
-					treatmentTime,
-					MeanArrival,
-					triageTime,
-					Seed,
-					Simtime*/);
+			var logFunction = function (msg) {
+				$(".log").append('<br>' + msg);
+			}
+			var results = edSim(logFunction);
 			
-			var msg = "Simulation Results for [" /* Parameters have been moved to ed-sim.js. Commented out code would display the values used for simulation
+			var msg = "Simulation Results" /* Parameters have been moved to ed-sim.js. Commented out code would display the values used for simulation
 								+ "Doctors on duty = " + doctorsOnDuty
 								+ ", Treatment Time = " + treatmentTime
 								+ ", Mean Arrival = " + MeanArrival
 								+ ", Mean triage time = " + triageTime
 								+ ", Seed = " + Seed
 								+ ", Sim time = " + Simtime */
-								+ "]<br>"
-								+ "Average time spent at A&E (min) = " 
-								+ results[0].toFixed(4)
-								+ "<br>Average number of patients in A&E = " 
-								+ results[2].toFixed(4)
+								+ "<br>"
+								+ (results.waitPerformance * 100).toPrecision(2)
+								+ "% seen within four hours."
+								+ "<br>" 
 								+ "<hr>";
 
 			$(".results").append(msg);
@@ -76,6 +76,8 @@
 		
 		<div class="results">
 			<a href="" id="clear_results">Clear</a><hr>
+		</div>
+		<div class="log">
 		</div>
 	</body>
 </html>

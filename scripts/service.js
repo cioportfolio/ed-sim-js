@@ -4,7 +4,7 @@
 var dayStaff = [10, 1, 1];
 var nightStaff = [5, 1, 1];
 
-var serviceConfiguration = {
+var serviceConfig = {
 // Useful referent information stored with the result. Could include source of case data, name of scenarios etc
 	meta: {
 		data: "Reference information to be stored with the results"
@@ -55,4 +55,6 @@ var serviceConfiguration = {
 	]
 };
 
-module.exports = serviceConfiguration;
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+	module.exports = serviceConfig;
+}
