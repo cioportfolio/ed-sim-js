@@ -60,19 +60,21 @@ var caseConfig = {
 			name: "travelDuration",
 			type: "function",
 			value: function() {
-				return random.normal(30.0, 20.0);
+				var travelTime = random.normal(30.0, 20.0);
+				return (travelTime >0)? travelTime : 0.0;
 			}
 		},{
 			// Time that will be spent in triage. Could be changed to a random function
 			name: "triageDuration",
 			type: "const",
-			value: 5.0
+			value: 5.1
 		},{
 			// Time that will be spent consulting a doctor
 			name: "consultationTime",
 			type: "function",
 			value: function () {
-				return random.normal(50.0, 30.0);
+				var consultTime = random.normal(50.0, 30.0);
+				return (consultTime > 0)? consultTime : 0.0;
 			}
 		},{
 			// Flag for cases which arrive by ambulance

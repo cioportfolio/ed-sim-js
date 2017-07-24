@@ -34,9 +34,7 @@ A more sophisticated approach is to build a web site which provided a user inter
 
 - PARTIALLY DONE - Flexible simulation core using case, staff and facility profiles. See ed-sim-0.2.js
 
-    1. The simulation models staff such as teams of doctors as simjs "facilities". The current version of simjs does not support changing the teams sizes (e.g. when people arrive or leave as part of the shift rota) but the basic simjs classes can be extended to support this.
-
-    2. Simjs provides a number of different scheduling approaches for "facilities". Processing in priority order is not currently supported but the basic simjs classes can be extended to support this.
+    - Simjs provides a number of different scheduling approaches for "facilities". Processing in priority order is not currently supported but the basic simjs classes can be extended to support this.
 
 ## Main components
 
@@ -52,13 +50,9 @@ A utility function which reads the case profile (structured in the same way as c
 
 A utility functioin which reads the staff and rota profile (structured in the same way as service.js) and generates a stream of events to simulate the arrival and departure of staff according to the shift rota.
 
-**Note** The rota is currently ignored and overriden in ed-sim-0.2.js. See the Development in progress section.
-
 ### service.js
 
 A configuration script to define the emergency department that will be simulated.
-
-**Note** The rota is currently ignored and overriden in ed-sim-0.2.js. See the Development in progress section.
 
 ```javascript
 // Structure of the configuration object:

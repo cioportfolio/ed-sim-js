@@ -1,8 +1,8 @@
 // Define convenient functions and constants for this service profile
 
 // Main shifts
-var dayStaff = [10, 1, 1];
-var nightStaff = [5, 1, 1];
+var dayStaff = [6, 1, 1];
+var nightStaff = [3, 1, 1];
 
 var serviceConfig = {
 // Useful referent information stored with the result. Could include source of case data, name of scenarios etc

@@ -13,14 +13,10 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
 
     // Import a tools which generates staff movements on and off shift
     var movGen = require("./genMovements.js");
-}
-// Create a case generator by providing the configuration details
-// Get next case cases.next().value;
-var cases = new caseGen(caseConfig);
 
-// Create a set of staff movement generators by providing the service details
-// Get next shift change staffing.next().value;
-var staffing = new movGen(serviceConfig);
+    // Add special features to the base simjs tools so that we can model changes to the number of staff on duty.
+    require("./simjs-edsim.js");
+}
 
 const Simtime = 7 * 24 * 60; // Duration of simulation in minutes. Currenty 1 week
 const waitTarget = 4 * 60; // Target for wait times
@@ -42,6 +38,14 @@ function edSim(logFunction)
     	return (delay < 0) ? 0 : delay;
     }
 
+// Create a case generator by providing the configuration details
+// Get next case cases.next().value;
+    var cases = new caseGen(caseConfig);
+
+// Create a set of staff movement generators by providing the service details
+// Get next shift change staffing.next().value;
+    var staffing = new movGen(serviceConfig);
+
 // Patter for an Entity to model the patients going through the ED       
     var Patient = {
         start: function () {
@@ -62,22 +66,22 @@ function edSim(logFunction)
             sim.log('>Patient ' + this.details.caseReference + ' travelling to ED ' + ((this.details.arriveByAmbulance)? "in an ambulance" : "in private or public transport"));
             // Set a timer to simulate journey to the ED
             // Could be extended to model Ambulance service at some point
-            this.setTimer(calcDelay(this, this.details.travelDuration)).done(this.triage);
+            this.setTimer(this.details.travelDuration).done(this.triage);
         },
 
         triage: function () {
-            sim.log('>Patient ' + this.details.caseReference + ' queueing for triage');
+            sim.log('>Patient ' + this.details.caseReference + ' has arrived and is queueing for triage');
             this.enterTime = this.time();
             stats.enter(this.enterTime); //These stats will show wait times
 
             //Got through appropriate triage route depending upon transport
             var nurseType = (this.details.arriveByAmbulance) ? "triageA" : "triage";
             // Wait in queue then see the triage nurse
-            this.useFacility(serviceElements[nurseType], this.details.triageDuration).done(this.consultation());
+            this.useFacility(serviceElements[nurseType], this.details.triageDuration).done(this.consultation);
         },
 
         consultation: function () {
-            sim.log('>Patient ' + this.details.caseReference + ' queueing for a doctor');
+            sim.log('>Patient ' + this.details.caseReference + ' has been triaged and is queueing for a doctor');
             this.useFacility(serviceElements.doctors, this.details.consultationTime).done(function () {
                 sim.log('>Patient ' + this.details.caseReference + ' leaving the ED');
                 stats.leave(this.enterTime, this.time()); //These stats will show wait times
@@ -89,29 +93,50 @@ function edSim(logFunction)
 // Object to hold objects for assets and staff
     var serviceElements = {};
 
-// Have not yet built a model for raising and lowering staff on shifts so just use fixed ones for now
-    for (var i =0; i < serviceConfig.staff.length; i++) {
-        // Model staff types as Facilities. Will need to add a priority order feature for doctors
-        serviceElements[serviceConfig.staff[i].label] = new Sim.Facility(serviceConfig.staff[i].name, Sim.Facility.FCFS, (i===0) ? 5 : 1);
-    }
-
     for (i=0; i < serviceConfig.assets.length; i++) {
         // Model assets as Facilities. Will need to use alternatives when combining e.g. doctors and resus units
         serviceElements[serviceConfig.assets[i].label] = new Sim.Facility(serviceConfig.assets[i].name, Sim.Facility.FCFS, serviceConfig.assets[i].count);
     }
 
-/*
-// To be developed. Will read shift movement and adjust the staffing levels in the model. Will need to extend "sim.addFacility" to handle this
+
+// Under development. Read shift movement and adjust the staffing levels in the model. Uses extensions in simjs-edsim.js
     var StaffDispatcher = {
     	start: function() {
+            // Get first shift and set up initial staff teams
     		var shift = staffing.next().value;
-            this.setTimer(calcDelay(this, shift.time)).done(function() {
-            // adjust the number of staff
+            this.setTimer(calcDelay(this, shift.time)).done(function () {
+                for (var i =0; i < shift.movement.length; i++) {
+                    // Model staff types as Facilities. Will need to add a priority order feature for doctors
+                    sim.log('Starting with ' + shift.movement[i] + ' ' + serviceConfig.staff[i].name);
+                    serviceElements[serviceConfig.staff[i].label] = new Sim.Facility(serviceConfig.staff[i].name, Sim.Facility.FCFS, shift.movement[i]);
+                    serviceElements[serviceConfig.staff[i].label].makeEdSim();
+                }
+                this.changeShift();
             });
-    	}
+        },
+        changeShift: function() {
+            // adjust the number of staff
+            var shift = staffing.next().value;
+            this.setTimer(calcDelay(this, shift.time)).done(function () {
+                sim.log('Changing shift');
+                for (var i =0; i < shift.movement.length; i++) {
+                    // Model staff types as Facilities. Will need to add a priority order feature for doctors
+                    if (shift.movement[i] !== 0) {
+                        if (shift.movement[i] > 0) {
+                        sim.log('Adding ' + shift.movement[i] + ' ' + serviceConfig.staff[i].name);
+                            serviceElements[serviceConfig.staff[i].label].addServers(shift.movement[i], this.time());
+                        } else {
+                            sim.log('Removing ' + (-shift.movement[i]) + ' ' + serviceConfig.staff[i].name);
+                            serviceElements[serviceConfig.staff[i].label].removeServers(-shift.movement[i]);
+                        }
+                    }
+                }
+                this.changeShift();
+            });
+        }
     };
 
-    sim.addEntity(StaffDispathcher); */
+    sim.addEntity(StaffDispatcher);
 
     
 //  Set route to display logging information
