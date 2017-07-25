@@ -90,6 +90,20 @@ function edSim(logFunction)
         }
     };
 
+//A utility function used by the priority queueu which takes two request objects and returns true if ro1 should be handled after ro2
+// The Request objects will have a number of properties which can be used in the "afterFunction"
+//  - an "order" property which tracks the order objects were added to the queue
+//  - a "scheduledAt" property which records the time when the request was queued
+//  - an "entity" property which is the Entity (in our case a Patient) which this request is for
+    function after(ro1, ro2) {
+        // Lower severity cases (higher number) should be handled after higher severity cases
+        if (ro1.entity.severity > ro2.entity.severity) return true;
+        if (ro1.entity.severity == ro2.entity.severity)
+            // For cases of the same severity handle later cases after earlier ones
+            return ro1.scheduledAt > ro2.scheduledAt;
+        return false;
+    }
+
 // Object to hold objects for assets and staff
     var serviceElements = {};
 
@@ -109,7 +123,7 @@ function edSim(logFunction)
                     // Model staff types as Facilities. Will need to add a priority order feature for doctors
                     sim.log('Starting with ' + shift.movement[i] + ' ' + serviceConfig.staff[i].name);
                     serviceElements[serviceConfig.staff[i].label] = new Sim.Facility(serviceConfig.staff[i].name, Sim.Facility.FCFS, shift.movement[i]);
-                    serviceElements[serviceConfig.staff[i].label].makeEdSim();
+                    serviceElements[serviceConfig.staff[i].label].makeEdSim(after);
                 }
                 this.changeShift();
             });

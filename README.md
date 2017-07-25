@@ -33,24 +33,25 @@ A more sophisticated approach is to build a web site which provided a user inter
 - Rota reader to load historic records into a format to be used in a simulation
 
 - PARTIALLY DONE - Flexible simulation core using case, staff and facility profiles. See ed-sim-0.2.js
-
-    - Simjs provides a number of different scheduling approaches for "facilities". Processing in priority order is not currently supported but the basic simjs classes can be extended to support this.
+	- DONE Created a subclass of the simjs PQueue to use for priority queueing of patients based upon a user supplied ording function
+	- DONE Created an variant of the simjs Facility which use a priority queue and allows the number of servers to be varied during the simulation
+    - Patients only queue for a single thing (e.g. a doctor or an resus room) using simjs tools such as Facilities and Buffers. The base simjs classes can be extended to handle AND/OR combinations such as wait for one of a number of facilities to become free (OR logic) or wait for two of more Facility to be free at the same time (AND logic). Alternatively existing simjs Buffers, Stores, Events and Messages could be used together to achieve the same effect.
 
 ## Main components
 
-### ed-sim-0.2.js
+### scripts/ed-sim-0.2.js
 
 The main simulation function. This reads the configuration scripts, builds a model using the elements available in simjs including a simulated stream of patients. ed-sim.js was the first prototype but is not now used.
 
-### genCases.js
+### scripts/genCases.js
 
 A utility function which reads the case profile (structured in the same way as case.js) and generates a stream of events to simulate the arrival of patients.
 
-### getMovements.js
+### scripts/getMovements.js
 
 A utility functioin which reads the staff and rota profile (structured in the same way as service.js) and generates a stream of events to simulate the arrival and departure of staff according to the shift rota.
 
-### service.js
+### scripts/service.js
 
 A configuration script to define the emergency department that will be simulated.
 
@@ -115,7 +116,7 @@ A configuration script to define the emergency department that will be simulated
 	]}
 ```
 
-### case.js
+### scripts/case.js
 
 A configuration script to define a flow of cases that the simulated emergency department will receive.
 
@@ -167,6 +168,15 @@ A bare bones script to perform tests and run the simulation in a node.js server.
 ```bash
 $ node test.js
 ```
+
+### scripts/simjs-edsim.js
+
+Defines some extensions to the base simjs classes.
+- Sim.edSimQ is a subclass of the base Sim.PQueue class which can be used for any request object. The only extensions are:
+    - The constructor takes a comparison function as a parameter to define the order of processing
+    - An empty function to indicate when the queue is empty
+
+- Sim.makeEdSim (and supporting functions) to convert a default simjs Facility into a special edsim one which uses a priority queue rather than a firt-in-first-out queue and provides functions to change the number of servers during the simulation.
 
 ### scripts/sim-0.26.js 
 

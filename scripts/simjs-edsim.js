@@ -4,6 +4,25 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
 	var Random = require("./sim-0.26.js").Random;
 }
 
+// Extend simjs priority queue so that we can use it for other purposes
+// "afterfunction" needs to take two parameters, o1 and o2, which will be Request objects in the queue and return true if o1 should be processed after o2
+// The Request objects will have a number of properties which can be used in the "afterFunction"
+//  - an "order" property which tracks the order objects were added to the queue
+//  - a "scheduledAt" property which records the time when the request was queued
+//  - an "entity" property which is the Entity which this request is for
+class edSimQ extends Sim.PQueue {
+  constructor(afterFunction) {
+    super();
+    this.greater = afterFunction;
+  }
+
+  empty() {
+	return this.data.length == 0;
+  }
+}
+
+Sim.edSimQ = edSimQ;
+
 //A variant of FCFS scheduling which will cope with changes to the number of servers
 Sim.Facility.prototype.useEdSim = function (duration, ro) {
 
@@ -18,7 +37,7 @@ Sim.Facility.prototype.useEdSim = function (duration, ro) {
 	ro.duration = duration;
 	var now = ro.entity.time();
 	this.stats.enter(now);
-	this.queue.push(ro, now);
+	this.queue.insert(ro);
 	this.useEdSimSchedule(now); //Use the new scheduling function
 };
 
@@ -26,7 +45,7 @@ Sim.Facility.prototype.useEdSim = function (duration, ro) {
 Sim.Facility.prototype.useEdSimSchedule = function (timestamp) {
 	
 	while (this.free > 0 && !this.queue.empty()) {
-		var ro = this.queue.shift(timestamp); // TODO
+		var ro = this.queue.remove(); // TODO
 		if (ro.cancelled) {
 			continue;
 		}
@@ -79,11 +98,17 @@ Sim.Facility.prototype.useEdSimCallback = function (ro) {
 };
 
 //Utility function to convert a FCFS Facility into a special edSimjs Facility
-Sim.Facility.prototype.makeEdSim = function () {
+// "afterfunction" needs to take two parameters, o1 and o2, which will be Request objects in the queue and return true if o1 should be processed after o2
+// The Request objects will have a number of properties which can be used in the "afterFunction"
+//  - an "order" property which tracks the order objects were added to the queue
+//  - a "scheduledAt" property which records the time when the request was queued
+//  - an "entity" property which is the Entity which this request is for
+Sim.Facility.prototype.makeEdSim = function (afterfunction) {
 	// Switch from the standard function to our special edSimjs variant
 	this.use = this.useEdSim;
 	// Set the target number of servers to the current value
 	this.targetServers = this.servers;
+	this.queue = new  edSimQ (afterfunction);
 };
 
 //Utility function to add additional servers to an existing Facility during the simulation.
