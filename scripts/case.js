@@ -7,7 +7,7 @@ var random = new Random();
 
 
 // Define convenient constants for this profile of cases
-const casesPerDay = 150.0;
+const casesPerDay = 145.0;
 const proportionAmbulance = 0.5;
 const proportionXRay = 0.5;
 

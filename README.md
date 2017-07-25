@@ -20,24 +20,36 @@ A more sophisticated approach is to build a web site which provided a user inter
 
 ## Development in progress
 
+- PARTIALLY DONE - Flexible simulation core using case, staff and facility profiles. See ed-sim-0.2.js
+	- DONE Created a subclass of the simjs PQueue to use for priority queueing of patients based upon a user supplied ordering function
+	- PARTIALLY DONE Created an variant of the simjs Facility which uses a priority queue and allows the number of servers to be varied during the simulation. Need to change default behaviour if there are no servers. If the initial number of servers is 0 simjs overrides this and adds 1 server.
+    - Patients only queue for a single thing (e.g. a doctor or an resus room) using simjs tools such as Facilities and Buffers. The base simjs classes can be extended to handle AND/OR combinations such as wait for one of a number of facilities to become free (OR logic) or wait for two of more Facility to be free at the same time (AND logic). Alternatively existing simjs Buffers, Stores, Events and Messages could be used together to achieve the same effect.
+
 - DONE - Structure to define cases which can be generated using stocastic functions or from actual historical records. See case.js
-
-- DONE - Case generator using stocastic functions to generate artificial, but realistic demand. See genCases.js and case.js
-
-- Case reader to load historic records into a format to be used in a simulation. Not yet done. Can be a simple JSON file load
-
-- DONE - Structure to define staff and facilities so medical teams and facilities can be generated or loaded from historical records. See service.js
 
 - DONE - Staff movements generator to manage available staff in a simulation. See genMovements.js
 
+- DONE - Case generator using stocastic functions to generate artificial, but realistic demand. See genCases.js and case.js
+
+- DONE - Structure to define staff and facilities so medical teams and facilities can be generated or loaded from historical records. See service.js
+
+- Case reader to load historic records into a format to be used in a simulation. Not yet done. Can be a simple JSON file load
+
 - Rota reader to load historic records into a format to be used in a simulation
 
-- PARTIALLY DONE - Flexible simulation core using case, staff and facility profiles. See ed-sim-0.2.js
-	- DONE Created a subclass of the simjs PQueue to use for priority queueing of patients based upon a user supplied ording function
-	- DONE Created an variant of the simjs Facility which use a priority queue and allows the number of servers to be varied during the simulation
-    - Patients only queue for a single thing (e.g. a doctor or an resus room) using simjs tools such as Facilities and Buffers. The base simjs classes can be extended to handle AND/OR combinations such as wait for one of a number of facilities to become free (OR logic) or wait for two of more Facility to be free at the same time (AND logic). Alternatively existing simjs Buffers, Stores, Events and Messages could be used together to achieve the same effect.
-
 ## Main components
+
+### index.html
+
+A bare bones web page which loads the javascript files and provides a minimal user interface to start a simulation and show the results. If you have a copy of the repository on your PC you can run the simulation just by opening this file in a browser.
+
+### test.js
+
+A bare bones script to perform tests and can be used to run the simulation in a node.js server.
+
+```bash
+$ node test.js
+```
 
 ### scripts/ed-sim-0.2.js
 
@@ -49,7 +61,7 @@ A utility function which reads the case profile (structured in the same way as c
 
 ### scripts/getMovements.js
 
-A utility functioin which reads the staff and rota profile (structured in the same way as service.js) and generates a stream of events to simulate the arrival and departure of staff according to the shift rota.
+A utility function which reads the staff and rota profile (structured in the same way as service.js) and generates a stream of events to simulate the arrival and departure of staff according to the shift rota.
 
 ### scripts/service.js
 
@@ -155,18 +167,6 @@ Structure of the configuration object:
 		Atrributen
 	}]
 }
-```
-
-### index.html
-
-A bare bones web page which loads the javascript files and provides a minimal user interface to start a simulation and show the results. If you have a copy of the repository on your PC you can run the simulation just by opening this file in a browser.
-
-### test.js
-
-A bare bones script to perform tests and run the simulation in a node.js server.
-
-```bash
-$ node test.js
 ```
 
 ### scripts/simjs-edsim.js

@@ -80,7 +80,8 @@ function movGen (config) {
 				// if something has changed emit this as an event
 				yield {
 					time: time,
-					movement: movement
+					movement: movement,
+					name: config.rota[i].name
 				};
 				// Keep track of the time and current staff levels
 				time += config.rota[i].duration;

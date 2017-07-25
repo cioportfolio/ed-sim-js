@@ -82,7 +82,7 @@ function edSim(logFunction)
 
         consultation: function () {
             sim.log('>Patient ' + this.details.caseReference + ' has been triaged and is queueing for a doctor');
-            this.useFacility(serviceElements.doctors, this.details.consultationTime).done(function () {
+            this.useFacility(serviceElements.junior, this.details.consultationTime).done(function () {
                 sim.log('>Patient ' + this.details.caseReference + ' leaving the ED');
                 stats.leave(this.enterTime, this.time()); //These stats will show wait times
                 seenWithinTarget.record((this.time() - this.enterTime < waitTarget) ? 1 : 0);
@@ -132,7 +132,7 @@ function edSim(logFunction)
             // adjust the number of staff
             var shift = staffing.next().value;
             this.setTimer(calcDelay(this, shift.time)).done(function () {
-                sim.log('Changing shift');
+                sim.log('Changing shift to ' + shift.name);
                 for (var i =0; i < shift.movement.length; i++) {
                     // Model staff types as Facilities. Will need to add a priority order feature for doctors
                     if (shift.movement[i] !== 0) {
