@@ -43,7 +43,7 @@ var serviceConfig = {
 			label: "junior",
 			name: "Junor Doctors",
 		},{
-			label: "Consultants",
+			label: "consultants",
 			name: "Consultants"
 		},{
 			label: "triage",

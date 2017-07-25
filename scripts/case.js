@@ -61,7 +61,7 @@ var caseConfig = {
 			type: "function",
 			value: function() {
 				var travelTime = random.normal(30.0, 20.0);
-				return (travelTime >0)? travelTime : 0.0;
+				return (travelTime > 0)? travelTime : 0.0;
 			}
 		},{
 			// Time that will be spent in triage. Could be changed to a random function
@@ -73,7 +73,7 @@ var caseConfig = {
 			name: "consultationTime",
 			type: "function",
 			value: function () {
-				var consultTime = random.normal(50.0, 30.0);
+				var consultTime = random.normal(35.0, 10.0);
 				return (consultTime > 0)? consultTime : 0.0;
 			}
 		},{
