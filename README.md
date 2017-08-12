@@ -4,11 +4,11 @@
 
 One of the piches at a recent [#NHS Hack Day]() concerned modelling or simulating an emergency department (commonly known as accident and emergency or just 'A&E') to help health professionals and others to get them to work more effectively. There is a lot more information on the [project site](ed-sim.github.io).
 
-A common challenge for this kind of project is keeping up the momentum after the event and being able to take on and develop the prototypes that are created. This is an experiment to see if using a well documented library ([simjs](simjs.com)) and a portable programming language (javascript) might make it easier to continue the great work that the team started.
+A common challenge for this kind of project is keeping up the momentum after the event and being able to take on and develop the prototypes that are created. This is an experiment to see if using a well documented library ([simjs](http://simjs.com)) and a portable programming language (javascript) might make it easier to continue the great work that the team started.
 
 ## Outline of this variant of the Emergency Department Simulator
 
-The simulator consists of a set of javascript programs built on top of [simjs](simjs.com). The scripts will run in almost any modern web browser and a bare bones web page is included to start a simulation without needing any kind of server. You can try the [demonstration](https://ed-sim.github.io/ed-sim-js/index.html) now. The scripts will also run on a server using [node.js] which means it can be run on pretty much any personal computer, server (windows or unix) or cloud service. This might be needed for more demanding uses e.g. very large models or many parallel simulations.
+The simulator consists of a set of javascript programs built on top of [simjs](http://simjs.com). The scripts will run in almost any modern web browser and a bare bones web page is included to start a simulation without needing any kind of server. You can try the [demonstration](https://ed-sim.github.io/ed-sim-js/index.html) now. The scripts will also run on a server using [node.js](https://nodejs.org/en/about/) which means it can be run on pretty much any personal computer, server (windows or unix) or cloud service. This might be needed for more demanding uses e.g. very large models or many parallel simulations.
 
 ## Usage
 
